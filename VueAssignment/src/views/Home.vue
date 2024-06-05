@@ -148,9 +148,8 @@
           try {
         const config = {
           headers: {
-            Authorization: `Bearer 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
-            
-            `,
+            // Authorization: `Bearer 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`, 
+            Authorization: `Bearer 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`, 
           },
         };
           const response = await axios.get(`https://api.github.com/users/Jan1Verse1/repos`, config);
