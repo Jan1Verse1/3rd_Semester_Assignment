@@ -1,7 +1,7 @@
 <template>
     <div>
       <!-- Header -->
-      <div class="bg-zinc-800">
+      <div class="bg-slate-900 w-screen">
         <nav class="p-4 flex justify-between items-center">
           <router-link
             class="flex row items-center shadow hover:shadow-lg active:shadow-xl p-4 rounded-xl transition duration-150 ease-in-out cursor-pointer"
@@ -16,11 +16,8 @@
             </div>
             <h4 class="text-white text-lg">Jan1Verse1</h4>
           </router-link>
-          <div>
-            <font-awesome-icon :icon="['fab', 'x-twitter']" />
-          </div>
         </nav>
-        <MyModal v-if="showModal" @close="closeModal" />
+ 
       </div>
   
       <!-- Head -->
@@ -29,10 +26,7 @@
         <div class="typing-demo">
           <p class="text-4xl mt-10 mb-10 md:text-6xl lg:text-8xl">{{ text1 }}</p>
           <p class="text-2xl">
-            <span
-              class="inline-block text-md md:text-2xl lg:text-3xl"
-              v-html="text2"
-            />
+            <span class="inline-block text-md md:text-2xl lg:text-3xl" v-html="text2" />
           </p>
           <div v-if="typingComplete" class="mt-10">
             <a
@@ -56,10 +50,7 @@
             v-model="searchQuery"
             class="px-4 py-2 border border-gray-300 rounded-md mr-2"
           />
-          <select
-            v-model="filterLanguage"
-            class="px-4 py-2 border border-gray-300 rounded-md"
-          >
+          <select v-model="filterLanguage" class="px-4 py-2 border border-gray-300 rounded-md">
             <option value="">All Languages</option>
             <option value="JavaScript">JavaScript</option>
             <option value="CSS">CSS</option>
@@ -67,7 +58,7 @@
             <option value="Shell">Shell</option>
           </select>
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4">
+        <div class="w-screen  grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4">
           <RepoCard
             v-for="repo in paginatedRepos"
             :key="repo.id"
@@ -78,48 +69,49 @@
             :htmlUrl="repo.html_url"
           />
         </div>
-        <!-- <div class="flex justify-end mt-6">
+        <div class="flex justify-end mt-6">
           <Pagination
             :currentPage="currentPage"
             :totalCount="filteredRepos.length"
             :pageSize="repoSize"
             @pageChange="handlePageChange"
           />
-        </div> -->
+        </div>
       </div>
     </div>
   </template>
   
   <script>
-  import axios from "axios";
-//   import MyModal from './modals/MyModal.vue';
-//   import Pagination from "../components/Pagination.vue";
-//   import RepoCard from "../components/RepoCard.vue";
+  import axios from 'axios';
+  // import MyModal from './modals/MyModal.vue';
+  import Pagination from '@/components/Pagination.vue';
+  import RepoCard from '@/components/RepoCard.vue';
   
   export default {
-    name: "Home",
+    name: 'Home',
     components: {
-    //   MyModal,
-    //   Pagination,
-    //   RepoCard
+      // MyModal,
+      Pagination,
+      RepoCard
     },
     data() {
       return {
         profileData: null,
-        showModal: false,
-        text1: "Hello...",
-        text2: "",
+        // showModal: false,
+        text1: 'Hello...',
+        text2: '',
         typingComplete: false,
         fullText: `I am <span style="color:#2b7bd7;"> Oluwaseyi Adedotun </span>, a <span class="blue-text"> Frontend Developer </span> with over 1 year experience proficiently building software with the following frontend technologies, <span class="blue-text">Javascript, React.js, Redux, Bootstrap, Tailwind CSS and others.</span> I believe in the principle of constant improvement and I am always trying to upskill by learning new technologies to add to my stack!`,
         repos: [],
-        searchQuery: "",
-        filterLanguage: "",
+        searchQuery: '',
+        filterLanguage: '',
         currentPage: 1,
         repoSize: 12,
         GITHUB_TOKEN: import.meta.env.VITE_GITHUB_PERSONAL_TOKEN
       };
     },
     created() {
+        console.log('GITHUB_TOKEN:', this.GITHUB_TOKEN); // Log the token to ensure it's being set
       this.fetchGitHubProfile();
       this.typeText();
       this.fetchGitHubRepos();
@@ -133,12 +125,12 @@
           console.error('Error fetching GitHub profile:', error);
         }
       },
-      openModal() {
-        this.showModal = true;
-      },
-      closeModal() {
-        this.showModal = false;
-      },
+    //   openModal() {
+    //     this.showModal = true;
+    //   },
+    //   closeModal() {
+    //     this.showModal = false;
+    //   },
       typeText() {
         let currentIndex = 0;
         const typingInterval = setInterval(() => {
@@ -152,23 +144,37 @@
         }, 25);
       },
       async fetchGitHubRepos() {
-        try {
-          const config = {
-            headers: {
-              Authorization: `Bearer ${this.GITHUB_TOKEN}`
-            }
-          };
-          const response = await axios.get(
-            `https://api.github.com/users/Jan1Verse1/repos`,
-            config
-          );
+      
+          try {
+        const config = {
+          headers: {
+            Authorization: `Bearer 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
+            
+            `,
+          },
+        };
+          const response = await axios.get(`https://api.github.com/users/Jan1Verse1/repos`, config);
           this.repos = response.data;
         } catch (error) {
-          console.error("Error fetching GitHub repos:", error);
+          console.error('Error fetching GitHub repos:', error);
         }
       },
       handlePageChange(page) {
         this.currentPage = page;
+      }
+    },
+    computed: {
+      filteredRepos() {
+        return this.repos.filter(repo => {
+          const matchesSearch = repo.name.toLowerCase().includes(this.searchQuery.toLowerCase());
+          const matchesLanguage = !this.filterLanguage || repo.language === this.filterLanguage;
+          return matchesSearch && matchesLanguage;
+        });
+      },
+      paginatedRepos() {
+        const start = (this.currentPage - 1) * this.repoSize;
+        const end = start + this.repoSize;
+        return this.filteredRepos.slice(start, end);
       }
     }
   };
