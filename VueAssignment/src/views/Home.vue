@@ -1,7 +1,7 @@
 <template>
     <div>
       <!-- Header -->
-      <div class="bg-cyan-900">
+      <div class="bg-zinc-800">
         <nav class="p-4 flex justify-between items-center">
           <router-link
             class="flex row items-center shadow hover:shadow-lg active:shadow-xl p-4 rounded-xl transition duration-150 ease-in-out cursor-pointer"
@@ -16,12 +16,9 @@
             </div>
             <h4 class="text-white text-lg">Jan1Verse1</h4>
           </router-link>
-          <!-- <button
-            @click="openModal"
-            class="text-white text-lg duration-150 ease-in-out cursor-pointer"
-          >
-            Add A Repository
-          </button> -->
+          <div>
+            <font-awesome-icon :icon="['fab', 'x-twitter']" />
+          </div>
         </nav>
         <MyModal v-if="showModal" @close="closeModal" />
       </div>
